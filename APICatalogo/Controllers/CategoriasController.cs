@@ -4,10 +4,12 @@ using APICatalogo.Interfaces;
 using APICatalogo.Models;
 using APICatalogo.Pagination;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using X.PagedList;
 
 namespace APICatalogo.Controllers;
 
@@ -30,6 +32,7 @@ public class CategoriasController : Controller
         return _context.Categorias.AsNoTracking().Include(p=> p.Produtos).ToList();
     }
     */
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get()
     {
@@ -70,15 +73,15 @@ public class CategoriasController : Controller
         return ObterCategorias(categorias);
     }
 
-    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(PagedList<Categoria> categorias)
+    private ActionResult<IEnumerable<CategoriaDTO>> ObterCategorias(IPagedList<Categoria> categorias)
     {
         var metadata = new
         {
-            categorias.TotalCount,
+            categorias.Count,
             categorias.PageSize,
-            categorias.CurrentPage,
-            categorias.HasNext,
-            categorias.HasPrevious
+            categorias.PageCount,
+            categorias.HasNextPage,
+            categorias.HasPreviousPage
         };
 
         Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
@@ -131,6 +134,7 @@ public class CategoriasController : Controller
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<CategoriaDTO>> Delete(int id)
     {
         var categoria = await _uof.CategoriaRepository.Get(c=> c.CategoriaId == id);

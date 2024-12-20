@@ -15,7 +15,7 @@ namespace APICatalogo.DTOs
         public string? Nome { get; set; }
 
         [Required(ErrorMessage = "A descrição é obrigatória")]
-        [StringLength(20, ErrorMessage = "A descrição deve ter no máximo {1} caracteres")]
+        [StringLength(100, ErrorMessage = "A descrição deve ter no máximo {1} caracteres")]
         public string? Descricao { get; set; }
 
         [Required]

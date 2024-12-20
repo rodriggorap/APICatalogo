@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Repositories;
 
-public class ProdutoRepository : Repository<Produto>, IProdutoRepository
+public class ProdutoRepository : RepositorySync<Produto>, IProdutoRepository
 {
 
     public ProdutoRepository(AppDbContext context) : base(context)
@@ -21,24 +21,24 @@ public class ProdutoRepository : Repository<Produto>, IProdutoRepository
             .Take(produtosParams.PageSIze).ToList();
     }*/
 
-    public async Task<PagedList<Produto>> GetProdutos(ProdutosParameters produtosParams)
+    public PagedList<Produto> GetProdutos(ProdutosParameters produtosParams)
     {
-        var produtos = await GetAll();
-        var produtosOrdenados = produtos.OrderBy(p => p.ProdutoId).AsQueryable();
-        var resultado = PagedList<Produto>.ToPageList(produtosOrdenados, produtosParams.PageNumber, produtosParams.PageSize);
+        //var produtos = await GetAll();
+        var produtos = GetAll().OrderBy(p => p.ProdutoId).AsQueryable();
+        var resultado = PagedList<Produto>.ToPageList(produtos, produtosParams.PageNumber, produtosParams.PageSize);
 
         return resultado;
     }
 
-    public async Task<IEnumerable<Produto>> GetProdutoPorCategoria(int id)
+    public IEnumerable<Produto> GetProdutoPorCategoria(int id)
     {
-        var produtoPorCategoria = await GetAll();
+        var produtoPorCategoria = GetAll();
         return produtoPorCategoria.Where(c => c.CategoriaId == id);
     }
 
-    public async Task<PagedList<Produto>> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams)
+    public PagedList<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams)
     {
-        var produtos = await GetAll();
+        var produtos = GetAll();
 
         if (produtosFiltroParams.Preco.HasValue && !string.IsNullOrEmpty(produtosFiltroParams.PrecoCriterio))
         {
