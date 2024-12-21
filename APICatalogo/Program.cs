@@ -45,7 +45,24 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "apicatalogo", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    {
+        Version = "v1",
+        Title = "apicatalogo",
+        Description = "Catálogo de Produtos e Categorias",
+        TermsOfService = new Uri("https://rodrigo.net/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "Rodridgo",
+            Email = "rodrigo@gmail.com",
+            Url = new Uri("https://rodrigo.net.net"),
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Usar sobre LICX",
+            Url = new Uri("https://rodrigo.net/license"),
+        }
+    });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
@@ -132,7 +149,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "APICatalogo");
+    });
     app.ConfigureExceptionsHandler();
 }
 

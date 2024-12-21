@@ -67,6 +67,7 @@ public class CategoriasController : Controller
     }
 
     [HttpGet("pagination")]
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get([FromQuery] CategoriasParameters categoriasParameters)
     {
         var categorias = await _uof.CategoriaRepository.GetCategorias(categoriasParameters);
@@ -92,6 +93,7 @@ public class CategoriasController : Controller
     }
 
     [HttpPost]
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
     public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDTO)
     {
         if(categoriaDTO is null)
@@ -111,6 +113,7 @@ public class CategoriasController : Controller
     }
 
     [HttpPut("{id:int}")]
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
     public async Task<ActionResult<CategoriaDTO>> Put(int id, CategoriaDTO categoriaDTO)
     {
         if (id != categoriaDTO.CategoriaId)
@@ -134,7 +137,8 @@ public class CategoriasController : Controller
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(Policy = "AdminOnly")]
+    //[Authorize(Policy = "AdminOnly")]
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
     public async Task<ActionResult<CategoriaDTO>> Delete(int id)
     {
         var categoria = await _uof.CategoriaRepository.Get(c=> c.CategoriaId == id);
@@ -147,9 +151,9 @@ public class CategoriasController : Controller
         var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);
         await _uof.Commit();
 
-        var categoriaExcluidaDTO = _mapper.Map<ProdutoDTO>(categoriaExcluida);
+        var categoriaExcluidaDTO = _mapper.Map<CategoriaDTO>(categoriaExcluida);
 
-        return Ok(categoriaExcluida);
+        return Ok(categoriaExcluidaDTO);
     }
 }
 

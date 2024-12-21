@@ -106,6 +106,13 @@ public class ProdutosController : Controller
             return BadRequest("Dados inválidos...");
         }
 
+        var produtoNome = _uof.ProdutoRepository.GetAll().Where(p => p.Nome == produtoDTO.Nome);
+        
+        if (produtoNome.Any())
+        {
+            return BadRequest("O produto já existe!");
+        }
+
         var produtos = _uof.ProdutoRepository.GetProdutoPorCategoria(produtoDTO.CategoriaId);
 
         if (produtos.Count() == 0)
@@ -135,6 +142,13 @@ public class ProdutosController : Controller
         if (_uof.ProdutoRepository.Get(p => p.ProdutoId == id) is null)
         {
             return NotFound("Produto não localizado...");
+        }
+
+        var produtoNome = _uof.ProdutoRepository.GetAll().Where(p => p.Nome == produtoDTO.Nome && p.ProdutoId != id);
+
+        if (produtoNome.Any())
+        {
+            return BadRequest("O nome do produto já existe!");
         }
 
         var produtos = _uof.ProdutoRepository.GetProdutoPorCategoria(produtoDTO.CategoriaId);
