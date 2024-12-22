@@ -32,7 +32,7 @@ public class CategoriasController : Controller
         return _context.Categorias.AsNoTracking().Include(p=> p.Produtos).ToList();
     }
     */
-    [Authorize]
+    //[Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> Get()
     {
@@ -146,6 +146,13 @@ public class CategoriasController : Controller
         if (categoria is null)
         {
             return NotFound("Produto não localizado...");
+        }
+
+        var categoriaProduto = _uof.ProdutoRepository.GetProdutoPorCategoria(id);
+
+        if (categoriaProduto.Any())
+        {
+            return BadRequest("A categoria possui relacionamentos...");
         }
         
         var categoriaExcluida = _uof.CategoriaRepository.Delete(categoria);

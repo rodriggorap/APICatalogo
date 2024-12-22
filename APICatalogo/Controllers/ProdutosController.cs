@@ -41,11 +41,12 @@ public class ProdutosController : Controller
     }
 
     [HttpGet]
-    [Authorize(Policy = "UserOnly")]
+    //[Authorize(Policy = "UserOnly")]
     public ActionResult<IEnumerable<ProdutoDTO>> Get() 
     {
         //throw new Exception("Exceção ao retornar Produtos");
         var produtos = _uof.ProdutoRepository.GetAll();
+        //throw new Exception();
 
         var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
 
@@ -87,6 +88,11 @@ public class ProdutosController : Controller
     [HttpGet("{id:int}", Name = "ObterProduto")]
     public ActionResult<ProdutoDTO> Get(int id)
     {
+        if (id == null || id <= 0)
+        {
+            return BadRequest("ID de produto inválido");
+        }
+
         var produto = _uof.ProdutoRepository.Get(p=> p.ProdutoId == id);
 
         if (produto is null)
@@ -145,6 +151,8 @@ public class ProdutosController : Controller
         }
 
         var produtoNome = _uof.ProdutoRepository.GetAll().Where(p => p.Nome == produtoDTO.Nome && p.ProdutoId != id);
+
+        //var produto1 = produtoNome.Select(p => p.Nome).FirstOrDefault(p => p == "MeuNome");
 
         if (produtoNome.Any())
         {
